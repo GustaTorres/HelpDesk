@@ -1,18 +1,23 @@
 package com.psgv.helpdesk.api.service;
 
-import org.springframework.data.domain.Page;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.psgv.helpdesk.api.entity.User;
+import com.psgv.helpdesk.api.repository.UserRepository;
 
-public interface UserService {
+@Service
+public class UserService extends CrudService<User, String> {
+
+	UserRepository repo;
 	
-	User findByEmail(String email);
+	@Autowired
+	public UserService(UserRepository repo) {
+		super(repo);
+		this.repo = repo;
+	}
 	
-	User createOrUpdate(User user);
-	
-	User findById(String id);
-	
-	void delete(String id);
-	
-	Page<User> findAll(int page, int count);
+	public User findByEmail(String email) {
+		return repo.findByEmail(email);
+	}
 }
