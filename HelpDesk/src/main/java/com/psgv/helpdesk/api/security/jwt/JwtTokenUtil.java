@@ -7,108 +7,108 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+@Component
 public class JwtTokenUtil implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7573491933104481295L;
+    private static final long serialVersionUID = -3301605591108950415L;
+    static final String CLAIM_KEY_USERNAME = "sub";
+    static final String CLAIM_KEY_CREATED = "created";
+    static final String CLAIM_KEY_EXPIRED = "exp";
 
-	static final String CLAIM_KEY_USERNAME = "sub";
-	static final String CLAIM_KEY_CREATED = "created";
-	static final String CLAIM_KEY_EXPIRED = "exp";
+    @Value("${jwt.secret}")
+    private String secret;
 
-	@Value("{jwt.secret}")
-	private String secret;
+    @Value("${jwt.expiration}")
+    private Long expiration;
 
-	@Value("{jwt.expiration}")
-	private Long expiration;
+    public String getUsernameFromToken(String token) {
+        String username;
+        try {
+            final Claims claims = getClaimsFromToken(token);
+            username = claims.getSubject();
+        } catch (Exception e) {
+            username = null;
+        }
+        return username;
+    }
 
-	public String getUserNameFromToken(final String token) {
-		String userName;
-		try {
-			final Claims claims = getClaimsFromToken(token);
-			userName = claims.getSubject();
-		} catch (Exception e) {
-			userName = null;
-		}
-		return userName;
-	}
+    public Date getExpirationDateFromToken(String token) {
+        Date expiration;
+        try {
+            final Claims claims = getClaimsFromToken(token);
+            expiration = claims.getExpiration();
+        } catch (Exception e) {
+            expiration = null;
+        }
+        return expiration;
+    }
 
-	public Date getExpirationDateFromToken(final String token) {
-		Date expiration;
-		try {
-			final Claims claims = getClaimsFromToken(token);
-			expiration = claims.getExpiration();
-		} catch (Exception e) {
-			expiration = null;
-		}
-		return expiration;
-	}
+    private Claims getClaimsFromToken(String token) {
+        Claims claims;
+        try {
+            claims = Jwts.parser()
+                    .setSigningKey(secret)
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (Exception e) {
+            claims = null;
+        }
+        return claims;
+    }
 
-	private Claims getClaimsFromToken(final String token) {
-		Claims claims;
-		try {
-			claims = Jwts.parser()
-					.setSigningKey(secret)
-					.parseClaimsJws(token)
-					.getBody();
-		} catch (Exception e) {
-			claims = null;
-		}
-		return claims;
-	}
-	
-	private Boolean isTokenExpired(final String token) {
-		final Date expiration = getExpirationDateFromToken(token);
-		return expiration.before(new Date());
-	}
-	
-	public String generateToken(UserDetails userDetails) {
-		Map<String, Object> mapClaims = new HashMap<>();
-		
-		mapClaims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
-		mapClaims.put(CLAIM_KEY_CREATED, new Date());
-		
-		return doGenerateToken(mapClaims);
-	}
-	
-	private String doGenerateToken(final Map<String, Object> mapClaims) {
-		final Date createdDate = (Date) mapClaims.get(CLAIM_KEY_CREATED);
-		Date expirationDate = new Date(createdDate.getTime() + expiration * 1000);
-		
-		return Jwts.builder()
-				.setClaims(mapClaims)
-				.setExpiration(expirationDate)
-				.signWith(SignatureAlgorithm.HS512, secret)
-				.compact();
-	}
-	
-	public Boolean canTokenBeRefreshed(final String token) {
-		return !isTokenExpired(token);
-	}
-	
-	public String refreshToken(final String token) {
-		String refreshedToken;
-		try {
-			final Claims claims = getClaimsFromToken(token);
-			claims.put(CLAIM_KEY_CREATED,new Date());
-			refreshedToken = doGenerateToken(claims);
-		}catch (Exception e) {
-			refreshedToken = null;
-		}
-		
-		return refreshedToken;
-	}
-	
-	public Boolean validateToken(final String token, final UserDetails userDetails) {
-		JwtUser user = (JwtUser)userDetails;
-		String userName = getUserNameFromToken(token);
-		return userName.equals(user.getUsername()) && !isTokenExpired(token);
-	}
+    private Boolean isTokenExpired(String token) {
+        final Date expiration = getExpirationDateFromToken(token);
+        return expiration.before(new Date());
+    }
+
+    public String generateToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+
+        claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
+
+        final Date createdDate = new Date();
+        claims.put(CLAIM_KEY_CREATED, createdDate);
+
+        return doGenerateToken(claims);
+    }
+
+    private String doGenerateToken(Map<String, Object> claims) {
+        final Date createdDate = (Date) claims.get(CLAIM_KEY_CREATED);
+        final Date expirationDate = new Date(createdDate.getTime() + expiration * 1000);
+        return Jwts.builder()
+                .setClaims(claims)
+                .setExpiration(expirationDate)
+                .signWith(SignatureAlgorithm.HS512, secret)
+                .compact();
+    }
+
+    public Boolean canTokenBeRefreshed(String token) {
+        return (!isTokenExpired(token));
+    }
+
+    public String refreshToken(String token) {
+        String refreshedToken;
+        try {
+            final Claims claims = getClaimsFromToken(token);
+            claims.put(CLAIM_KEY_CREATED, new Date());
+            refreshedToken = doGenerateToken(claims);
+        } catch (Exception e) {
+            refreshedToken = null;
+        }
+        return refreshedToken;
+    }
+
+    public Boolean validateToken(String token, UserDetails userDetails) {
+        JwtUser user = (JwtUser) userDetails;
+        final String username = getUsernameFromToken(token);
+        return (
+                username.equals(user.getUsername())
+                        && !isTokenExpired(token));
+    }
 }

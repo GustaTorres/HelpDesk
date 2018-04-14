@@ -1,5 +1,6 @@
 package com.psgv.helpdesk.api.controller;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.psgv.helpdesk.api.model.FilterCriteria;
 import com.psgv.helpdesk.api.service.CrudService;
 
-public abstract class CrudController<T,ID> {
+public abstract class CrudController<T,ID extends Serializable> {
 	
 	private CrudService<T, ID> service;
 	

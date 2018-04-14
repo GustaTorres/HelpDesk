@@ -1,5 +1,6 @@
 package com.psgv.helpdesk.api.service;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.springframework.data.domain.Example;
@@ -10,15 +11,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.psgv.helpdesk.api.model.FilterCriteria;
-import com.psgv.helpdesk.api.repository.GenericRepository;
 
-public abstract class CrudService<T, ID> {
+public abstract class CrudService<T, ID extends Serializable> {
 
-	private GenericRepository<T, ID> repo;
+	private MongoRepository<T, ID> repo;
 
-	public CrudService(GenericRepository<T, ID> repo) {
+	public CrudService(MongoRepository<T, ID> repo) {
 		this.repo = repo;
 	}
 
@@ -31,7 +32,7 @@ public abstract class CrudService<T, ID> {
 	}
 
 	public void saveAll(Iterable<T> entities) {
-		repo.saveAll(entities);
+		repo.save(entities);
 	}
 
 	public void delete(T entity) {
@@ -39,7 +40,7 @@ public abstract class CrudService<T, ID> {
 	}
 
 	public void deleteAll(Iterable<T> entities) {
-		repo.deleteAll(entities);
+		repo.delete(entities);
 	}
 
 	public List<T> findAll() {
@@ -50,7 +51,6 @@ public abstract class CrudService<T, ID> {
 		return repo.findAll((Example.of(entity)));
 	}
 
-	@SuppressWarnings("deprecation")
 	public Page<T> findAllByExamplePaginated(FilterCriteria<T> filter) {
 
 		Pageable pageable = null;
@@ -73,6 +73,6 @@ public abstract class CrudService<T, ID> {
 	}
 
 	public T findById(ID id) {
-		return repo.findById(id).get();
+		return repo.findOne(id);
 	}
 }
