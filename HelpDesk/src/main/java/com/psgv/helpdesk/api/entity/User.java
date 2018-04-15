@@ -8,7 +8,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.psgv.helpdesk.api.annotation.isRequired;
 import com.psgv.helpdesk.api.enums.ProfileEnum;
+import com.psgv.helpdesk.api.enums.TypePersistEnum;
 
 @Document
 public class User {
@@ -27,6 +29,7 @@ public class User {
 	
 	private ProfileEnum profile;
 
+	@isRequired(message = "Id not informated", typePersist = TypePersistEnum.UPDATE)
 	public String getId() {
 		return id;
 	}
@@ -35,6 +38,7 @@ public class User {
 		this.id = id;
 	}
 
+	@isRequired(message = "Email not informated", typePersist = {TypePersistEnum.SAVE, TypePersistEnum.UPDATE})
 	public String getEmail() {
 		return email;
 	}
@@ -43,6 +47,7 @@ public class User {
 		this.email = email;
 	}
 
+	@isRequired(message = "Password not informated", typePersist = {TypePersistEnum.SAVE, TypePersistEnum.UPDATE})
 	public String getPassword() {
 		return password;
 	}
@@ -50,7 +55,8 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
+	
+	@isRequired(message = "Profile not informated", typePersist = {TypePersistEnum.SAVE, TypePersistEnum.UPDATE})
 	public ProfileEnum getProfile() {
 		return profile;
 	}

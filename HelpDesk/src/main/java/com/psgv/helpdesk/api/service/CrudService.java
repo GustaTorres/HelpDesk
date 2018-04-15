@@ -27,16 +27,16 @@ public abstract class CrudService<T, ID extends Serializable> {
 		return repo.save(entity);
 	}
 
-	public T update(T entity) {
-		return repo.save(entity);
-	}
-
 	public void saveAll(Iterable<T> entities) {
 		repo.save(entities);
 	}
 
 	public void delete(T entity) {
 		repo.delete(entity);
+	}
+
+	public void delete(ID id) {
+		repo.delete(id);
 	}
 
 	public void deleteAll(Iterable<T> entities) {
@@ -52,7 +52,6 @@ public abstract class CrudService<T, ID extends Serializable> {
 	}
 
 	public Page<T> findAllByExamplePaginated(FilterCriteria<T> filter) {
-
 		Pageable pageable = null;
 		if (filter.getSort() != null) {
 			Direction direction = Direction.valueOf(filter.getSort());
@@ -69,7 +68,6 @@ public abstract class CrudService<T, ID extends Serializable> {
 				.withIgnoreCase()
 				.withStringMatcher(StringMatcher.STARTING);
 		return repo.findAll(Example.of(example, matcher), pageable);
-
 	}
 
 	public T findById(ID id) {
