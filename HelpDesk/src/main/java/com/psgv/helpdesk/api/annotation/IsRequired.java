@@ -9,7 +9,7 @@ import com.psgv.helpdesk.api.enums.TypePersistEnum;
 
 @Target(value = ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface isRequired {
+public @interface IsRequired {
 	String message();
 	TypePersistEnum [] typePersist();
 }

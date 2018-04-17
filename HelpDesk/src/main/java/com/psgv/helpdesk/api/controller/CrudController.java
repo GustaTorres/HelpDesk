@@ -1,59 +1,156 @@
 package com.psgv.helpdesk.api.controller;
 
 import java.io.Serializable;
-import java.util.List;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
-import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.psgv.helpdesk.api.annotation.IsRequired;
+import com.psgv.helpdesk.api.dto.ResponseDTO;
+import com.psgv.helpdesk.api.enums.TypePersistEnum;
 import com.psgv.helpdesk.api.model.FilterCriteria;
 import com.psgv.helpdesk.api.service.CrudService;
 
-public abstract class CrudController<T,ID extends Serializable> {
-	
+public abstract class CrudController<T, ID extends Serializable> {
+
 	private CrudService<T, ID> service;
-	
+
 	public CrudController(CrudService<T, ID> service) {
 		this.service = service;
 	}
-	
-	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public T save(@RequestBody T entity){
-		return service.save(entity);
+
+//	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+//	@ResponseBody
+//	public T save(@RequestBody T entity) {
+//		return service.save(entity);
+//	}
+//
+//	@RequestMapping(value = "/saveAll", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+//	@ResponseBody
+//	public void saveAll(@RequestBody Iterable<T> entities) {
+//		service.saveAll(entities);
+//	}
+//
+//	@RequestMapping(value = "/delete", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+//	@ResponseBody
+//	public void delete(@RequestBody T entity) {
+//		service.delete(entity);
+//	}
+//
+//	@RequestMapping(value = "/deleteAll", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+//	@ResponseBody
+//	public void deleteAll(@RequestBody Iterable<T> entities) {
+//		service.deleteAll(entities);
+//	}
+
+//	@RequestMapping(value = "/filter", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+//	@ResponseBody
+//	public Page<T> filter(@RequestBody FilterCriteria<T> filter) {
+//		return service.findAllByExamplePaginated(filter);
+//	}
+
+//	@RequestMapping(value = "/searchAll", method = RequestMethod.GET)
+//	@ResponseBody
+//	public List<T> searchAll() {
+//		return service.findAll();
+//	}
+
+	@PostMapping()
+	public ResponseEntity<ResponseDTO<T>> save(@RequestBody T entity, BindingResult result) {
+		return persist(entity, result, TypePersistEnum.SAVE);
 	}
 	
-	@RequestMapping(value = "/saveAll", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public void saveAll(@RequestBody Iterable<T> entities){
-		service.saveAll(entities);
+	@PutMapping()
+	public ResponseEntity<ResponseDTO<T>> update(@RequestBody T entity, BindingResult result) {
+		return persist(entity, result, TypePersistEnum.UPDATE);
 	}
 
-	@RequestMapping(value = "/delete", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public void delete(@RequestBody T entity) {
-		service.delete(entity);
+	private ResponseEntity<ResponseDTO<T>> persist(T entity, BindingResult result,TypePersistEnum typePersist) {
+		ResponseDTO<T> response = new ResponseDTO<>();
+		try {
+			validatePersist(entity, result, typePersist);
+			if (result.hasErrors()) {
+				result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+				return ResponseEntity.badRequest().body(response);
+			}
+			T entityPersisted = service.save(entity);
+			response.setData(entityPersisted);
+		} catch (DuplicateKeyException dE) {
+			response.getErrors().add(entity.getClass().getSimpleName() + " already registered !");
+			return ResponseEntity.badRequest().body(response);
+		} catch (Exception e) {
+			response.getErrors().add(e.getMessage());
+			return ResponseEntity.badRequest().body(response);
+		}
+		return ResponseEntity.ok(response);
 	}
 
-	@RequestMapping(value = "/deleteAll", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public void deleteAll(@RequestBody Iterable<T> entities) {
-		service.deleteAll(entities);
-	}
+	private void validatePersist(T entity, BindingResult result, TypePersistEnum typePersist)
+			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-	@RequestMapping(value = "/filter", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public Page<T> filter(@RequestBody FilterCriteria<T> filter) {
-		return service.findAllByExamplePaginated(filter);
+		Class<?> clazz = entity.getClass();
+
+		for (Method method : clazz.getMethods()) {
+			if (method.isAnnotationPresent(IsRequired.class)) {
+				IsRequired isRequiredAnnotation = method.getAnnotation(IsRequired.class);
+				TypePersistEnum[] types = isRequiredAnnotation.typePersist();
+				for (TypePersistEnum typePersistEnum : types) {
+					if (typePersist.equals(typePersistEnum)) {
+						Object invoke = method.invoke(entity);
+						if (invoke == null) {
+							result.addError
+							(
+								new ObjectError(entity.getClass().getSimpleName(), isRequiredAnnotation.message())
+							);
+						}
+						break;
+					}
+				}
+			}
+		}
 	}
 	
-	@RequestMapping(value = "/searchAll", method = RequestMethod.GET)
-	@ResponseBody
-	public List<T> searchAll(){
-		return service.findAll();
+	@GetMapping(value = "{id}")
+	public ResponseEntity<ResponseDTO<T>> findById(@PathVariable("id") ID id) {
+		ResponseDTO<T> response = new ResponseDTO<>();
+		T entity = service.findById(id);
+		if (entity == null) {
+			response.getErrors().add("Register not found id:" + id);
+			return ResponseEntity.badRequest().body(response);
+		}
+		response.setData(entity);
+		return ResponseEntity.ok(response);
+	}
+	
+	@DeleteMapping(value = "{id}")
+	public ResponseEntity<ResponseDTO<String>> delete(@PathVariable("id") ID id) {
+		ResponseDTO<String> response = new ResponseDTO<String>();
+		T entity = service.findById(id);
+		if (entity == null) {
+			response.getErrors().add("Register not found id:" + id);
+			return ResponseEntity.badRequest().body(response);
+		}
+		service.delete(id);
+		return ResponseEntity.ok(new ResponseDTO<String>());
+	}
+	
+
+	@PostMapping(value = "filter")
+	public ResponseEntity<ResponseDTO<Page<T>>> findAll(@RequestBody FilterCriteria<T> filter) {
+		ResponseDTO<Page<T>> response = new ResponseDTO<Page<T>>();
+		Page<T> users = service.findAllByExamplePaginated(filter);
+		response.setData(users);
+		return ResponseEntity.ok(response);
 	}
 }
