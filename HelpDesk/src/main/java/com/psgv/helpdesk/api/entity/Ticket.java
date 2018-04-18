@@ -8,8 +8,10 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.psgv.helpdesk.api.annotation.IsRequired;
 import com.psgv.helpdesk.api.enums.PriorityEnum;
 import com.psgv.helpdesk.api.enums.StatusEnum;
+import com.psgv.helpdesk.api.enums.TypePersistEnum;
 
 @Document
 public class Ticket {
@@ -63,7 +65,8 @@ public class Ticket {
 	public void setDate(Calendar date) {
 		this.date = date;
 	}
-
+	
+	@IsRequired(message = "Title not informated", typePersist = TypePersistEnum.SAVE)
 	public String getTitle() {
 		return title;
 	}

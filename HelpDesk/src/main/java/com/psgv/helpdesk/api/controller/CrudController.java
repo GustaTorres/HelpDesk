@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -67,7 +69,7 @@ public abstract class CrudController<T, ID extends Serializable> {
 //	}
 
 	@PostMapping()
-	public ResponseEntity<ResponseDTO<T>> save(@RequestBody T entity, BindingResult result) {
+	public ResponseEntity<ResponseDTO<T>> save(HttpServletRequest request, @RequestBody T entity, BindingResult result) {
 		return persist(entity, result, TypePersistEnum.SAVE);
 	}
 	
