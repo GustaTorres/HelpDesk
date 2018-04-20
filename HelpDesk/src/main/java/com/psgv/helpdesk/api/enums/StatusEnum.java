@@ -4,7 +4,8 @@ public enum StatusEnum {
 
 	NEW, 
 	ASSIGNED, 
-	RESOLVED, 
+	RESOLVED,
+	APPROVED,
 	DISAPPROVED, 
 	CLOSED;
 
