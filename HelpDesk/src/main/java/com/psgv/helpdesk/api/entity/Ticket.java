@@ -42,6 +42,7 @@ public class Ticket {
 	@Transient
 	private List<ChangeStatus>changes;
 
+	@IsRequired (message = "Id not informated", typePersist = TypePersistEnum.UPDATE )
 	public String getId() {
 		return id;
 	}
@@ -83,6 +84,7 @@ public class Ticket {
 		this.number = number;
 	}
 
+	@IsRequired (message = "Status not informated", typePersist = TypePersistEnum.UPDATE)
 	public StatusEnum getStatus() {
 		return status;
 	}
