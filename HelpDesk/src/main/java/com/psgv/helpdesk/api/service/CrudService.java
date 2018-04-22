@@ -73,4 +73,8 @@ public abstract class CrudService<T, ID extends Serializable> {
 	public T findById(ID id) {
 		return repo.findOne(id);
 	}
+
+	public T update(T entity) {
+		return repo.save(entity);
+	}
 }

@@ -3,8 +3,8 @@ package com.psgv.helpdesk.api.model;
 public class FilterCriteria<T> {
 	
 	private T example;
-	private Integer pageSize;
-	private Integer pageNumber;
+	private Integer pageSize = 10;
+	private Integer pageNumber = 0;
 	private String sort;
 	private String sortElement;
 

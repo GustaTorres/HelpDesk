@@ -81,13 +81,23 @@ public abstract class CrudController<T, ID extends Serializable> {
 	private ResponseEntity<ResponseDTO<T>> persist(T entity, BindingResult result,TypePersistEnum typePersist) {
 		ResponseDTO<T> response = new ResponseDTO<>();
 		try {
+			
 			validatePersist(entity, result, typePersist);
+			
 			if (result.hasErrors()) {
 				result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
 				return ResponseEntity.badRequest().body(response);
 			}
-			T entityPersisted = service.save(entity);
+			
+			T entityPersisted = null;
+			if(TypePersistEnum.SAVE.equals(typePersist)) {
+				entityPersisted = service.save(entity);
+			}else {
+				entityPersisted = service.update(entity);
+			}
+			
 			response.setData(entityPersisted);
+			
 		} catch (DuplicateKeyException dE) {
 			response.getErrors().add(entity.getClass().getSimpleName() + " already registered !");
 			return ResponseEntity.badRequest().body(response);
@@ -151,8 +161,14 @@ public abstract class CrudController<T, ID extends Serializable> {
 	@PostMapping(value = "filter")
 	public ResponseEntity<ResponseDTO<Page<T>>> findAll(@RequestBody FilterCriteria<T> filter) {
 		ResponseDTO<Page<T>> response = new ResponseDTO<Page<T>>();
-		Page<T> users = service.findAllByExamplePaginated(filter);
-		response.setData(users);
+		
+		if(filter.getExample() == null) {
+			response.getErrors().add("Entity Example not informated: ");
+			return ResponseEntity.badRequest().body(response);
+		}
+		
+		Page<T> entities = service.findAllByExamplePaginated(filter);
+		response.setData(entities);
 		return ResponseEntity.ok(response);
 	}
 }

@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -57,26 +58,25 @@ public class TicketController extends CrudController<Ticket, String> {
 	
 	@PreAuthorize("hasAnyRole('CUSTOMER','TECHNICIAN')")
 	@Override
-	public ResponseEntity<ResponseDTO<Ticket>> update(Ticket entity, BindingResult result) {
+	public ResponseEntity<ResponseDTO<Ticket>> update(@RequestBody Ticket entity, BindingResult result) {
 		return super.update(entity, result);
 	}
 	
 	@PreAuthorize("hasAnyRole('CUSTOMER','TECHNICIAN')")
 	@Override
-	public ResponseEntity<ResponseDTO<Ticket>> findById(String id) {
+	public ResponseEntity<ResponseDTO<Ticket>> findById(@PathVariable("id")String id) {
 		return super.findById(id);
 	}
 	
 	@PreAuthorize("hasAnyRole('CUSTOMER')")
 	@Override
-	public ResponseEntity<ResponseDTO<String>> delete(String id) {
+	public ResponseEntity<ResponseDTO<String>> delete(@PathVariable("id")String id) {
 		return super.delete(id);
 	}
 	
 	@PreAuthorize("hasAnyRole('CUSTOMER','TECHNICIAN')")
 	@Override
-	public ResponseEntity<ResponseDTO<Page<Ticket>>> findAll(
-			FilterCriteria<Ticket> filter) {
+	public ResponseEntity<ResponseDTO<Page<Ticket>>> findAll(@RequestBody FilterCriteria<Ticket> filter) {
 		return super.findAll(filter);
 	}
 	
