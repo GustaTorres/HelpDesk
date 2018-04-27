@@ -4,7 +4,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.psgv.helpdesk.api.entity.User;
 import com.psgv.helpdesk.api.enums.ProfileEnum;
@@ -18,17 +17,17 @@ public class HelpDeskApplication {
 	}
 	
     @Bean
-    CommandLineRunner init(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    CommandLineRunner init(UserRepository userRepository) {
         return args -> {
-            initUsers(userRepository, passwordEncoder);
+            initUsers(userRepository);
         };
 
     }
     
-	private void initUsers(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+	private void initUsers(UserRepository userRepository) {
         User admin = new User();
         admin.setEmail("admin@helpdesk.com");
-        admin.setPassword(passwordEncoder.encode("123456"));
+        admin.setPassword("123456");
         admin.setProfile(ProfileEnum.ROLE_ADMIN);
 
         User find = userRepository.findByEmail("admin@helpdesk.com");
