@@ -1,10 +1,11 @@
+import { AuthInterceptor } from './components/security/auth.interceptor';
 import { SharedService } from './services/shared.service';
 import { TicketService } from './services/ticket.service';
 import { UserService } from './services/user.service';
 import { routes } from './app.routes';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule,HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule} from '@angular/forms';
 
 import { AppComponent } from './app.component';
@@ -28,9 +29,19 @@ import { LoginComponent } from './components/security/login/login.component';
     BrowserModule,
     routes,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    routes,
   ],
-  providers: [UserService,TicketService,SharedService],
+  providers: [
+    UserService,
+    TicketService,
+    SharedService,    
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

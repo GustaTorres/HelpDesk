@@ -16,10 +16,7 @@ export class LoginComponent implements OnInit {
   shared: SharedService;
   message: string;
 
-  constructor(
-    private userService: UserService,
-    private router: Router
-  ) {
+  constructor(private userService: UserService, private router: Router) {
     this.shared = SharedService.getInstance();
   }
 
@@ -42,12 +39,18 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  cancel(){
+  cancel() {
     this.message = '';
-    this.user = new User('','','','');
+    this.user = new User('', '', '', '');
     window.location.href = '/login';
     window.location.reload();
   }
 
-
+  getFromGroupClass(isInvalid: boolean, isDirty: boolean) {
+    return {
+      'form-group': true,
+      'has-error': isInvalid && isDirty,
+      'has-success': !isInvalid && isDirty
+    }
+  }
 }

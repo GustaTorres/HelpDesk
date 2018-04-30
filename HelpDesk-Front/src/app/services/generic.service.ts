@@ -3,6 +3,8 @@ import { HELP_DESK_API } from './helpdesk.api';
 import { HttpClient } from '@angular/common/http';
 export class GenericService<T> {
 
+  public filter: FilterCriteria = new FilterCriteria(null,null,null,null,null);
+
   constructor(public http: HttpClient, public path: string) { }
 
   create(entity: T) {
