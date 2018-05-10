@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SharedService } from './../../services/shared.service';
-import { HttpInterceptor, HttpHandler, HttpRequest, HttpEvent } from '@angular/common/http/';
+import { HttpInterceptor, HttpHandler, HttpRequest, HttpEvent } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 
 

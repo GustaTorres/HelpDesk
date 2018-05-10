@@ -133,7 +133,7 @@ public abstract class CrudController<T, ID extends Serializable> {
 		}
 	}
 	
-	@GetMapping(value = "{id}")
+	@GetMapping(value = "/{id}")
 	public ResponseEntity<ResponseDTO<T>> findById(@PathVariable("id") ID id) {
 		ResponseDTO<T> response = new ResponseDTO<>();
 		T entity = service.findById(id);
@@ -145,7 +145,7 @@ public abstract class CrudController<T, ID extends Serializable> {
 		return ResponseEntity.ok(response);
 	}
 	
-	@DeleteMapping(value = "{id}")
+	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<ResponseDTO<String>> delete(@PathVariable("id") ID id) {
 		ResponseDTO<String> response = new ResponseDTO<String>();
 		T entity = service.findById(id);
@@ -158,7 +158,7 @@ public abstract class CrudController<T, ID extends Serializable> {
 	}
 	
 
-	@PostMapping(value = "filter")
+	@PostMapping(value = "/filter")
 	public ResponseEntity<ResponseDTO<Page<T>>> findAll(@RequestBody FilterCriteria<T> filter) {
 		ResponseDTO<Page<T>> response = new ResponseDTO<Page<T>>();
 		

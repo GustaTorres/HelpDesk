@@ -10,7 +10,7 @@ import com.psgv.helpdesk.api.entity.User;
 import com.psgv.helpdesk.api.service.UserService;
 
 @RestController
-@RequestMapping("/api/user/")
+@RequestMapping("/api/user")
 @CrossOrigin(origins = "*")
 @PreAuthorize("hasAnyRole('ADMIN')")
 public class UserController extends CrudController<User, String>{
