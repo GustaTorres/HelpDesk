@@ -1,9 +1,10 @@
+import { Observable } from 'rxjs/Observable';
 import { ResponseApi } from './../../model/response-api';
 import { UserService } from './../../services/user.service';
 import { SharedService } from './../../services/shared.service';
 import { User } from './../../model/user.model';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NgForm} from '@angular/forms';
+import { NgForm } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -16,7 +17,7 @@ export class UserNewComponent implements OnInit {
   @ViewChild("form")
   form: NgForm
 
-  user = new User('','','','');
+  user = new User('', '', '', '');
   shared: SharedService;
   message: {};
   classCss: {};
@@ -24,33 +25,41 @@ export class UserNewComponent implements OnInit {
   constructor(
     private userService: UserService,
     private route: ActivatedRoute
-  ) { 
+  ) {
     this.shared = SharedService.getInstance();
   }
 
   ngOnInit() {
     let id: string = this.route.snapshot.params['id'];
-    if(id != undefined){
+    if (id != undefined) {
       this.findById(id);
     }
   }
-  
-  findById(id: string){
+
+  findById(id: string) {
     this.userService.findById(id).subscribe((responseApi: ResponseApi) => {
       this.user = responseApi.data;
       this.user.password = '';
-    }, err =>{
-        this.showMessage({
-          type: 'error',
-          text: err['error']['errors'][0]
-        });
+    }, err => {
+      this.showMessage({
+        type: 'error',
+        text: err['error']['errors'][0]
+      });
     });
   }
 
-  register(){
+  register() {
     this.message = {};
-    this.userService.create(this.user).subscribe((responseApi: ResponseApi) => {
-      this.user = new User('','','','');
+    var observable: Observable<Object> = null;
+
+    if(this.user.id == null){
+      observable = this.userService.save(this.user);
+    }else{
+      observable = this.userService.update(this.user);
+    }
+
+    observable.subscribe((responseApi: ResponseApi) => {
+      this.user = new User('', '', '', '');
       let userRet: User = responseApi.data;
       this.form.resetForm();
       this.showMessage({
@@ -65,7 +74,7 @@ export class UserNewComponent implements OnInit {
     });
   }
 
-  private showMessage(message: {type: string, text: string}){
+  private showMessage(message: { type: string, text: string }) {
     this.message = message;
     this.buildClasses(message.type);
     setTimeout(() => {
@@ -73,11 +82,11 @@ export class UserNewComponent implements OnInit {
     }, 3000);
   }
 
-  private buildClasses(type: string){
+  private buildClasses(type: string) {
     this.classCss = {
       'alert': true
     }
-    this.classCss['alert-'+type] = true;
+    this.classCss['alert-' + type] = true;
   }
 
   getFromGroupClass(isInvalid: boolean, isDirty: boolean) {
@@ -87,5 +96,5 @@ export class UserNewComponent implements OnInit {
       'has-success': !isInvalid && isDirty
     }
   }
-  
+
 }

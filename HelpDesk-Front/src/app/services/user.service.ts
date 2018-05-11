@@ -1,5 +1,4 @@
 import { GenericService } from './generic.service';
-import { FilterCriteria } from './../dto/filtercriteria.dto';
 import { HELP_DESK_API } from './helpdesk.api';
 import { User } from './../model/user.model';
 import { HttpClient } from '@angular/common/http';
