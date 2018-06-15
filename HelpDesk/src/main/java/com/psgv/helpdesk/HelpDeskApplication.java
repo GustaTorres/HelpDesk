@@ -21,7 +21,6 @@ public class HelpDeskApplication {
         return args -> {
             initUsers(userRepository);
         };
-
     }
     
 	private void initUsers(UserRepository userRepository) {

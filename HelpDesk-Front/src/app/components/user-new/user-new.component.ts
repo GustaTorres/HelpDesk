@@ -17,7 +17,7 @@ export class UserNewComponent implements OnInit {
   @ViewChild("form")
   form: NgForm
 
-  user = new User('', '', '', '');
+  user = new User(null, '', '', '');
   shared: SharedService;
   message: {};
   classCss: {};
@@ -69,7 +69,7 @@ export class UserNewComponent implements OnInit {
     }, err => {
       this.showMessage({
         type: 'error',
-        text: err['error']['error']
+        text: err['error']['errors'][0]
       });
     });
   }

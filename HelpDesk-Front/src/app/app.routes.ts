@@ -10,6 +10,7 @@ import { ModuleWithProviders } from '@angular/core';
 export const ROUTES: Routes = [
     { path: '', component: HomeComponent, canActivate: [AuthGuard]},
     { path: 'user-new', component: UserNewComponent, canActivate: [AuthGuard]},
+    { path: 'user-new/:id', component: UserNewComponent, canActivate: [AuthGuard]},
     { path: 'user-list', component: UserListComponent, canActivate: [AuthGuard]},
     { path: 'login', component: LoginComponent }
 ]
