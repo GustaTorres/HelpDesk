@@ -1,75 +1,71 @@
 <div class="col-md-6">
   <div class="box box-info">
     <div class="box-header with-border">
-      <h3 class="box-title">New User</h3>
+      <h3 class="box-title">New Ticket</h3>
     </div>
     <form class="form-horizontal" #form="ngForm" (ngSubmit)="register()" novalidate>
       <div [ngClass] = "classCss" role="alert" *ngIf="message">
         <strong>{{ message.text }}</strong>
       </div>
       <div class="box-body">
-        <div [ngClass] = "getFromGroupClass(email.invalid, email.dirty)">
-          <label for="inputEmail" class="col-sm-2 control-label">Email</label>
-
+        <div [ngClass] = "getFromGroupClass(title.invalid, title.dirty)">
+          <label for="inputTitle" class="col-sm-2 control-label">Title</label>
           <div class="col-sm-10">
-            <input 
-              type="email" 
+            <input type="text" 
               class="form-control" 
-              name = "email"
-              id="inputEmail" 
-              placeholder="Email" 
-              [(ngModel)] = "user.email"
-              #email="ngModel"
-              email>
-            <span class = "help-block" *ngIf="email.invalid && email.dirty">Invalid Email!</span>
+              name = "title"
+              id="inputTitle" 
+              placeholder="Title" 
+              [(ngModel)] = "ticket.title"
+              #title="ngModel"
+              required>
+            <span class = "help-block" *ngIf="title.invalid && title.dirty">Title is required!</span>
           </div>
         </div>
-        <div [ngClass] = "getFromGroupClass(password.invalid, password.dirty)">
-          <label for="inputPassword" class="col-sm-2 control-label">Password</label>
+        <div [ngClass] = "getFromGroupClass(priority.invalid, priority.dirty)">
+          <label for="inputPriority" class="col-sm-2 control-label">Priority</label>
           <div class="col-sm-10">
-              <input 
-                type="password" 
-                class="form-control"
-                name = "password" 
-                id="inputPassword" 
-                placeholder="Password" 
-                [(ngModel)] = "user.password"
-                #password="ngModel"
-                required>
-              <span class = "help-block" *ngIf="password.invalid && password.dirty">Password is required!</span>
-            </div>
-        </div>
-
-        <div [ngClass] = "getFromGroupClass(profile.invalid, profile.dirty)">
-          <label for="inputProfile" class="col-sm-2 control-label">Profile</label>
-          <div class="col-sm-10">
-              <select [(ngModel)] = "user.profile"
+              <select [(ngModel)] = "ticket.priority"
                 class="form-control select2"
-                id="inputProfile" 
-                name = "profile" 
-                #profile="ngModel"
+                id="inputPriority" 
+                name = "priority" 
+                #priority="ngModel"
                 style="width: 100%"
                 required>
-                <option>ROLE_ADMIN</option>
-                <option>ROLE_CUSTOMER</option>
-                <option>ROLE_TECHNICIAN</option>
+                <option>HIGH</option>
+                <option>NORMAL</option>
+                <option>LOW</option>
               </select>
-              <span class="help-block" *ngIf="profile.invalid && profile.dirty">Profile is required!</span>
+              <span class="help-block" *ngIf="priority.invalid && priority.dirty">Priority is required!</span>
             </div>
         </div>
+        <div [ngClass] = "getFromGroupClass(description.invalid, description.dirty)">
+          <label for="inputDescription" class="col-sm-2 control-label">Description</label>
+          <div class="col-sm-10">
+            <textarea
+              class="form-control" 
+              name = "description"
+              rows="3"
+              id="inputDescription" 
+              placeholder="Description" 
+              [(ngModel)] = "ticket.description"
+              #description="ngModel"
+              required>
+            </textarea>
+            <span class = "help-block" *ngIf="description.invalid && description.dirty">Description is required!</span>
+          </div>
+        </div>
         <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-10">
-            <div class="checkbox">
-              <label>
-                <input type="checkbox"> Remember me
-              </label>
-            </div>
+          <label for="inputImage" class="col-sm-2 control-label">Image</label>
+          <div class="col-sm-10">
+            <img [src]="ticket.image" width="50%" height="50%">
+            <input type="file" id="image" (change)="onfileChange($event)">
           </div>
         </div>
       </div>
       <div class="box-footer">
         <button type="submit" (click)="cancel()"class="btn btn-default">Cancel</button>
-        <button type="submit" id="btnLogin" [disabled] = "!form.valid" class="btn btn-info pull-right">Save</button>
+        <button type="submit" id="btnSave" [disabled] = "!form.valid" class="btn btn-info pull-right">Save</button>
       </div>
     </form>
   </div>

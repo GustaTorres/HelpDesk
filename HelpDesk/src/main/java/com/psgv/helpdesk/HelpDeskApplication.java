@@ -1,5 +1,7 @@
 package com.psgv.helpdesk;
 
+import java.io.IOException;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,12 +25,12 @@ public class HelpDeskApplication {
         };
     }
     
-	private void initUsers(UserRepository userRepository) {
+	private void initUsers(UserRepository userRepository) throws IOException {
         User admin = new User();
         admin.setEmail("admin@helpdesk.com");
         admin.setPassword("123456");
         admin.setProfile(ProfileEnum.ROLE_ADMIN);
-
+        
         User find = userRepository.findByEmail("admin@helpdesk.com");
         if (find == null) {
             userRepository.save(admin);

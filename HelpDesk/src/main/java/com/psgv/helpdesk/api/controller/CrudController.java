@@ -68,12 +68,12 @@ public abstract class CrudController<T, ID extends Serializable> {
 //		return service.findAll();
 //	}
 
-	@PostMapping()
+	@PostMapping
 	public ResponseEntity<ResponseDTO<T>> save(HttpServletRequest request, @RequestBody T entity, BindingResult result) {
 		return persist(entity, result, TypePersistEnum.SAVE);
 	}
 	
-	@PutMapping()
+	@PutMapping
 	public ResponseEntity<ResponseDTO<T>> update(@RequestBody T entity, BindingResult result) {
 		return persist(entity, result, TypePersistEnum.UPDATE);
 	}

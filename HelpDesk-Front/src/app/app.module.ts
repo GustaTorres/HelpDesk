@@ -19,6 +19,7 @@ import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/security/login/login.component';
 import { UserNewComponent } from './components/user-new/user-new.component';
 import { TicketNewComponent } from './components/ticket-new/ticket-new.component';
+import { TicketListComponent } from './components/ticket-list/ticket-list.component';
 
 
 @NgModule({
@@ -32,6 +33,7 @@ import { TicketNewComponent } from './components/ticket-new/ticket-new.component
     UserNewComponent,
     UserListComponent,
     TicketNewComponent,
+    TicketListComponent,
   ],
   imports: [
     BrowserModule,

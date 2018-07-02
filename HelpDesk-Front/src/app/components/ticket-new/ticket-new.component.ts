@@ -17,7 +17,7 @@ export class TicketNewComponent implements OnInit {
   @ViewChild("form")
   form: NgForm
 
-  ticket = new Ticket('',null,null,'',null,'','',null,'','',null);
+  ticket = new Ticket(null,null,null,'',null,'NEW',null,null,'','',null);
   shared = SharedService;
   message: {};
   classCss: {};
@@ -56,7 +56,7 @@ export class TicketNewComponent implements OnInit {
     }
 
     observable.subscribe((responseApi: ResponseApi) => {
-      this.ticket = new Ticket('',null,null,'',null,'','',null,'','',null);
+      this.ticket = new Ticket(null,null,null,'',null,'NEW',null,null,'','',null);
       let ticketRet: Ticket = responseApi.data;
       this.form.resetForm();
       this.showMessage({
@@ -66,7 +66,7 @@ export class TicketNewComponent implements OnInit {
     }, err => {
       this.showMessage({
         type: 'error',
-        text: err['error']['errors'][0]
+        text: err['error']['message']
       });
     });
   }
