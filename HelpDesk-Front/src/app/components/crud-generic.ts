@@ -30,7 +30,7 @@ export class CrudGeneric<T>{
   }
 
   delete(id: string) {
-    this.dialogService.confirm('Do you want to delete the user ?').then((canDelete: boolean) => {
+    this.dialogService.confirm('Do you want to delete this register ?').then((canDelete: boolean) => {
       if (canDelete) {
         this.message = {};
         this.service.delete(id).subscribe((responseApi: ResponseApi) => {

@@ -32,42 +32,6 @@ public abstract class CrudController<T, ID extends Serializable> {
 		this.service = service;
 	}
 
-//	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-//	@ResponseBody
-//	public T save(@RequestBody T entity) {
-//		return service.save(entity);
-//	}
-//
-//	@RequestMapping(value = "/saveAll", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-//	@ResponseBody
-//	public void saveAll(@RequestBody Iterable<T> entities) {
-//		service.saveAll(entities);
-//	}
-//
-//	@RequestMapping(value = "/delete", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-//	@ResponseBody
-//	public void delete(@RequestBody T entity) {
-//		service.delete(entity);
-//	}
-//
-//	@RequestMapping(value = "/deleteAll", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-//	@ResponseBody
-//	public void deleteAll(@RequestBody Iterable<T> entities) {
-//		service.deleteAll(entities);
-//	}
-
-//	@RequestMapping(value = "/filter", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//	@ResponseBody
-//	public Page<T> filter(@RequestBody FilterCriteria<T> filter) {
-//		return service.findAllByExamplePaginated(filter);
-//	}
-
-//	@RequestMapping(value = "/searchAll", method = RequestMethod.GET)
-//	@ResponseBody
-//	public List<T> searchAll() {
-//		return service.findAll();
-//	}
-
 	@PostMapping
 	public ResponseEntity<ResponseDTO<T>> save(HttpServletRequest request, @RequestBody T entity, BindingResult result) {
 		return persist(entity, result, TypePersistEnum.SAVE);
