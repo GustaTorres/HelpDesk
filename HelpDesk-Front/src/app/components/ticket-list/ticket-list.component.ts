@@ -43,6 +43,7 @@ export class TicketListComponent extends CrudGeneric<Ticket> implements OnInit {
 
   clearFilter() {
     this.ticket = new Ticket(null, null, null, null, null, null, null, null, null, null, null);
+    this.filter.example = this.ticket;
     this.findFilter();
   }
 
